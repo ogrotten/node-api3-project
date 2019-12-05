@@ -2,6 +2,7 @@ const express = require('express');
 const server = express();
 const userRouter = require("./users/userRouter.js");
 
+server.use(express.json());
 server.use("/user", userRouter)
 
 server.get('/', logger, (req, res) => {

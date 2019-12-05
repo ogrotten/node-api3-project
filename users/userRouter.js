@@ -1,16 +1,20 @@
 const express = require('express');
 const userdb = require("./userDb.js")
+const postdb = require("./userDb.js")
 const router = express.Router();
 
-router.post('/', (req, res) => {
-
-});
-
-router.post('/:id/posts', (req, res) => {
-
-});
-
 router.get('/', (req, res) => {
+	userdb.get(req.query)
+		.then(users => {
+			res.send(users)
+		})
+		.catch(err => {
+			res.status(500).json({
+				message: "POST user problem",
+				loc: "userRouter > router.post() > catch",
+				error: err
+			})
+		})
 
 });
 
@@ -31,7 +35,53 @@ router.put('/:id', (req, res) => {
 
 });
 
+router.post('/', validateUser, (req, res) => {
+	clg(req.body);
+	userdb.insert(req.body)
+		.then(user => {
+			res.status(200).json({user});
+		})
+		.catch(err => {
+			res.status(500).json({
+				message: "POST user problem",
+				loc: "userRouter > router.post() > catch",
+				error: err
+			})
+		})
+});
+
+router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
+	clg(req.body);
+	userdb.insert(req.body)
+		.then(post => {
+			res.status(200).json({user});
+		})
+		.catch(err => {
+			res.status(500).json({
+				message: "POST user problem",
+				loc: "userRouter > router.post() > catch",
+				error: err
+			})
+		})
+});
+
 //custom middleware
+
+function validatePost(req, res, next) {
+	if (Object.keys(req.body).length === 0) {
+		res.status(400).json({
+			message: "need a body",
+			loc: "userRouter > validatePost()",
+		})
+	}
+	if (!req.body.text) {
+		res.status(400).json({
+			message: "need text field",
+			loc: "userRouter > validateUser()",
+		})
+	}
+	next();
+}
 
 function validateUserId(req, res, next) {
 	userdb.getById(req.params.id)
@@ -58,11 +108,19 @@ function validateUserId(req, res, next) {
 }
 
 function validateUser(req, res, next) {
-
-}
-
-function validatePost(req, res, next) {
-
+	if (Object.keys(req.body).length === 0) {
+		res.status(400).json({
+			message: "need a body",
+			loc: "userRouter > validateUser()",
+		})
+	}
+	if (!req.body.name) {
+		res.status(400).json({
+			message: "need name field",
+			loc: "userRouter > validateUser()",
+		})
+	}
+	next();
 }
 
 module.exports = router;
