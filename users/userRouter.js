@@ -24,7 +24,17 @@ router.get('/:id', validateUserId, (req, res) => {
 });
 
 router.get('/:id/posts', (req, res) => {
-
+	userdb.getUserPosts(req.params.id)
+	.then(postsAll => {
+		res.status(200).json(postsAll);
+	})
+	.catch(err => {
+		res.status(500).json({
+			message: "POST comment GET all posts problem",
+			loc: "userRouter > router.post > userdb.insert > userdb.getUserPosts > catch",
+			error: err
+		})
+	})
 });
 
 router.delete('/:id', (req, res) => {
@@ -51,14 +61,27 @@ router.post('/', validateUser, (req, res) => {
 });
 
 router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
-	clg(req.body);
-	userdb.insert(req.body)
-		.then(post => {
-			res.status(200).json({user});
+	clg("64",req.body);
+
+	postdb.insert(req.body)
+		.then(postOne => {
+			
+			userdb.getUserPosts(req.params.id)
+			.then(postsAll => {
+				res.status(200).json({postsAll});
+			})
+			.catch(err => {
+				res.status(500).json({
+					message: "POST comment GET all posts problem",
+					loc: "userRouter > router.post > userdb.insert > userdb.getUserPosts > catch",
+					error: err
+				})
+			})
+
 		})
 		.catch(err => {
 			res.status(500).json({
-				message: "POST user problem",
+				message: "POST comment problem",
 				loc: "userRouter > router.post() > catch",
 				error: err
 			})
@@ -87,7 +110,7 @@ function validateUserId(req, res, next) {
 	userdb.getById(req.params.id)
 		.then(user => {
 			if (user) {
-				clg(user);
+				clg("113",user);
 				req.user = user;
 				next();
 			} else {
@@ -126,5 +149,5 @@ function validateUser(req, res, next) {
 module.exports = router;
 
 function clg(...x) {
-	for (let exes of x) console.log(exes);
+	console.log(...x);
 }
