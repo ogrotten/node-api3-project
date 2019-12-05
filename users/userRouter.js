@@ -1,6 +1,6 @@
 const express = require('express');
 const userdb = require("./userDb.js")
-const postdb = require("./userDb.js")
+const postdb = require("../posts/postDb.js")
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -79,6 +79,7 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
 			})
 
 		})
+		.then(x => {})
 		.catch(err => {
 			res.status(500).json({
 				message: "POST comment problem",
