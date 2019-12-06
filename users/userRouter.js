@@ -66,8 +66,9 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
 	postdb.insert(req.body)
 		.then(postOne => {
 			
-			userdb.getUserPosts(req.params.id)
+			userdb.getUserPosts(req.body.user_id)
 			.then(postsAll => {
+				clg("71", postsAll)
 				res.status(200).json({postsAll});
 			})
 			.catch(err => {
